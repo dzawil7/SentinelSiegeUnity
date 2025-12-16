@@ -6,6 +6,7 @@ public class Player2Controller : MonoBehaviour
     public int health = 100;
     public int maxHealth = 100;
     public int totalDamageDealt = 0;
+    public bool isDead = false; // Tambahan state mati
 
     [Header("Pengaturan Gerakan")]
     [SerializeField] private float moveSpeed = 8f;
@@ -17,20 +18,26 @@ public class Player2Controller : MonoBehaviour
     [SerializeField] private float attackCooldown = 0.8f;
 
     [Header("Referensi untuk Membidik")]
-    [SerializeField] private Transform bossTransform; // <<< TAMBAHAN: Slot untuk referensi Boss
+    [SerializeField] private Transform bossTransform; 
 
     private float nextAttackTime = 0f;
     private Rigidbody2D rb;
+    private Animator anim; // Referensi Animator
     private bool isOnGround = true;
     private bool isFacingRight = true;
+    private Collider2D col; // Referensi Collider
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        anim = GetComponent<Animator>();
+        col = GetComponent<Collider2D>();
     }
 
     void Update()
     {
+        if (isDead) return; // Stop input jika mati
+
         // --- Input Gerakan (J, L, I) ---
         float moveDirection = 0f;
 
@@ -42,6 +49,11 @@ public class Player2Controller : MonoBehaviour
         
         rb.velocity = new Vector2(moveDirection * moveSpeed, rb.velocity.y);
 
+        // Animasi Jalan
+        if (anim != null) anim.SetFloat("Speed", Mathf.Abs(moveDirection));
+        // Animasi Ground Check (Opsional jika ada parameter IsGrounded)
+        if (anim != null) anim.SetBool("IsGrounded", isOnGround);
+
         // --- Logika Membalikkan Arah Karakter ---
         if (moveDirection > 0 && !isFacingRight) {
             Flip();
@@ -51,6 +63,11 @@ public class Player2Controller : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.I) && isOnGround) {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            
+            // Animasi Lompat
+            if (anim != null) anim.SetTrigger("Jump");
+            
+            isOnGround = false; // Mencegah double jump instan
         }
 
         // --- Input Serangan (K) ---
@@ -69,9 +86,15 @@ public class Player2Controller : MonoBehaviour
         Vector3 theScale = transform.localScale;
         theScale.x *= -1;
         transform.localScale = theScale;
+        
+        // Memutar firePoint agar peluru keluar ke arah yang benar (karena transform dibalik)
+        if(firePoint != null)
+        {
+             firePoint.Rotate(0f, 180f, 0f);
+        }
     }
 
-    // <<< FUNGSI ATTACK() SEKARANG MENGHITUNG ARAH KE BOSS >>>
+    // <<< FUNGSI ATTACK() >>>
     private void Attack()
     {
         // Pengaman: Jangan lakukan apa-apa jika Boss belum di-set
@@ -80,6 +103,9 @@ public class Player2Controller : MonoBehaviour
             Debug.LogError("Boss Transform belum di-set di Player2Controller! Serangan dibatalkan.");
             return;
         }
+
+        // Animasi Attack
+        if (anim != null) anim.SetTrigger("Attack");
 
         // 1. Hitung arah dari titik tembak (firePoint) ke posisi Boss
         Vector2 directionToBoss = (bossTransform.position - firePoint.position).normalized;
@@ -93,7 +119,7 @@ public class Player2Controller : MonoBehaviour
         // 4. Tembakkan proyektil dengan posisi dan ROTASI yang sudah benar
         GameObject projectileGO = Instantiate(projectilePrefab, firePoint.position, targetRotation);
         
-        // 5. <<< PERUBAHAN: Cek apakah script ada sebelum menetapkan owner >>>
+        // 5. Cek apakah script ada sebelum menetapkan owner
         Projectile projectileScript = projectileGO.GetComponent<Projectile>();
         if (projectileScript != null)
         {
@@ -102,22 +128,52 @@ public class Player2Controller : MonoBehaviour
         }
         else
         {
-            // Jika tidak ada, beri pesan error yang jelas di Console!
-            Debug.LogError("FATAL ERROR: 'projectilePrefab' Anda tidak memiliki script 'Projectile.cs' terpasang! Statistik tidak akan tercatat.");
+            Debug.LogError("FATAL ERROR: 'projectilePrefab' Anda tidak memiliki script 'Projectile.cs' terpasang!");
         }
 
         // 6. Set cooldown
         nextAttackTime = Time.time + attackCooldown;
     }
 
-
     public void TakeDamage(int damage)
     {
+        if (isDead) return;
+
         health -= damage;
+        
+        // Animasi Terluka
+        if (anim != null) anim.SetTrigger("Hurt");
+
         if (health <= 0)
         {
-            Destroy(gameObject);
+            Die();
         }
+    }
+
+    private void Die()
+    {
+        if (isDead) return;
+
+        isDead = true;
+        health = 0;
+
+        // Trigger Animasi Mati
+        if (anim != null) anim.SetBool("IsDead", true); // Atau SetTrigger("Die")
+
+        // Matikan fisika agar mayat tidak gerak/jatuh aneh
+        rb.velocity = Vector2.zero;
+        rb.isKinematic = true; 
+        
+        // Matikan collider
+        if(col != null) col.enabled = false;
+
+        Debug.Log("Player 2 Died.");
+    }
+
+    // --- FUNGSI ANIMATION EVENT (WAJIB DI-SETUP DI UNITY) ---
+    public void OnDeathAnimationFinished()
+    {
+        Destroy(gameObject);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -125,11 +181,8 @@ public class Player2Controller : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground")) { isOnGround = true; }
     }
 
-
-
     private void OnCollisionExit2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Ground")) { isOnGround = false; }
     }
 }
-

@@ -118,7 +118,8 @@ public class PlayerController : MonoBehaviour
         {
             GameObject hitboxGO = Instantiate(meleeHitboxPrefab, attackPoint.position, attackPoint.rotation);
             AttackHitbox hitboxScript = hitboxGO.GetComponent<AttackHitbox>();
-            if (hitboxScript != null) hitboxScript.owner = this;
+            // SAYA PERTAHANKAN: owner = this sesuai kode asli Anda
+            if (hitboxScript != null) hitboxScript.owner = this; 
         }
         
         nextAttackTime = Time.time + attackCooldown;
@@ -135,12 +136,22 @@ public class PlayerController : MonoBehaviour
 
     private void Die()
     {
+        if (isDead) return; // Mencegah pemanggilan ganda
+
         isDead = true;
         health = 0;
         if (anim != null) anim.SetBool("IsDead", true);
         rb.velocity = Vector2.zero;
         rb.isKinematic = true;
+        
+        // Opsional: Mematikan collider agar mayat tidak menghalangi (opsional, bisa dihapus jika tidak perlu)
+        Collider2D col = GetComponent<Collider2D>();
+        if (col != null) col.enabled = false;
+
         Debug.Log("Player " + playerID + " Died.");
+        
+        // MODIFIKASI: Destroy dihapus dari sini agar animasi bisa jalan dulu.
+        // Destroy akan dipanggil via Event.
     }
 
     public void AddDamageScore(int damage)
@@ -155,5 +166,12 @@ public class PlayerController : MonoBehaviour
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
         }
+    }
+
+    // --- FUNGSI TAMBAHAN UNTUK ANIMATION EVENT ---
+    // Cara Setup: Window > Animation > Pilih Clip Death > Frame Terakhir > Add Event > Pilih Fungsi Ini
+    public void OnDeathAnimationFinished()
+    {
+        Destroy(gameObject);
     }
 }

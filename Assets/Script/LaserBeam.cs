@@ -3,7 +3,7 @@ using UnityEngine;
 public class LaserBeam : MonoBehaviour
 {
     public float speed = 25f;
-    public int damage = 15;
+    public int damage = 25;
     public float lifetime = 3f;
     public BossAI owner; // <<< TAMBAHAN: Referensi ke Boss
 

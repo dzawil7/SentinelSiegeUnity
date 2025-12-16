@@ -3,7 +3,7 @@ using UnityEngine;
 // Script ini adalah untuk serangan Ground Slam Boss
 public class BossAttackHitbox : MonoBehaviour
 {
-    public int damage = 25;
+    public int damage = 15;
     // Referensi ke Boss yang melakukan serangan ini, untuk melaporkan statistik
     public BossAI owner; 
 

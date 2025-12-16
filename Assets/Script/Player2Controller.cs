@@ -6,7 +6,7 @@ public class Player2Controller : MonoBehaviour
     public int health = 100;
     public int maxHealth = 100;
     public int totalDamageDealt = 0;
-    public bool isDead = false; // Tambahan state mati
+    public bool isDead = false;
 
     [Header("Pengaturan Gerakan")]
     [SerializeField] private float moveSpeed = 8f;
@@ -20,12 +20,21 @@ public class Player2Controller : MonoBehaviour
     [Header("Referensi untuk Membidik")]
     [SerializeField] private Transform bossTransform; 
 
+    // --- Variabel Ground Check Asli ---
+    // Variabel ini dipertahankan di Inspector, tetapi tidak digunakan di kode karena menggunakan Collision Events
+    [Header("Ground Check (Collision Based)")]
+    public Transform groundCheck;
+    public float groundCheckRadius = 0.2f;
+    public LayerMask groundLayer;
+
+    // --- Internal State ---
     private float nextAttackTime = 0f;
     private Rigidbody2D rb;
-    private Animator anim; // Referensi Animator
-    private bool isOnGround = true;
+    private Animator anim;
+    private Collider2D col;
+    
+    private bool isOnGround = true; // Diatur oleh OnCollisionEnter/Exit
     private bool isFacingRight = true;
-    private Collider2D col; // Referensi Collider
 
     void Start()
     {
@@ -36,9 +45,9 @@ public class Player2Controller : MonoBehaviour
 
     void Update()
     {
-        if (isDead) return; // Stop input jika mati
+        if (isDead) return;
 
-        // --- Input Gerakan (J, L, I) ---
+        // --- 1. Input Gerakan (J, L) ---
         float moveDirection = 0f;
 
         if (Input.GetKey(KeyCode.J)) {
@@ -49,28 +58,31 @@ public class Player2Controller : MonoBehaviour
         
         rb.velocity = new Vector2(moveDirection * moveSpeed, rb.velocity.y);
 
-        // Animasi Jalan
-        if (anim != null) anim.SetFloat("Speed", Mathf.Abs(moveDirection));
-        // Animasi Ground Check (Opsional jika ada parameter IsGrounded)
-        if (anim != null) anim.SetBool("IsGrounded", isOnGround);
+        // Animasi
+        if (anim != null) 
+        {
+            anim.SetFloat("Speed", Mathf.Abs(moveDirection));
+            anim.SetBool("IsGrounded", isOnGround);
+        }
 
-        // --- Logika Membalikkan Arah Karakter ---
+        // --- 2. Logika Flip ---
         if (moveDirection > 0 && !isFacingRight) {
             Flip();
         } else if (moveDirection < 0 && isFacingRight) {
             Flip();
         }
 
+        // --- 3. Input Lompat (LOGIKA ASLI TANPA BUFFER/COYOTE) ---
         if (Input.GetKeyDown(KeyCode.I) && isOnGround) {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
             
-            // Animasi Lompat
+            // Integrasi Animasi Jump
             if (anim != null) anim.SetTrigger("Jump");
             
             isOnGround = false; // Mencegah double jump instan
         }
 
-        // --- Input Serangan (K) ---
+        // --- 4. Input Serangan (K) ---
         if (Time.time >= nextAttackTime)
         {
             if (Input.GetKeyDown(KeyCode.K))
@@ -87,67 +99,47 @@ public class Player2Controller : MonoBehaviour
         theScale.x *= -1;
         transform.localScale = theScale;
         
-        // Memutar firePoint agar peluru keluar ke arah yang benar (karena transform dibalik)
         if(firePoint != null)
         {
-             firePoint.Rotate(0f, 180f, 0f);
+            firePoint.Rotate(0f, 180f, 0f);
         }
     }
 
-    // <<< FUNGSI ATTACK() >>>
     private void Attack()
     {
-        // Pengaman: Jangan lakukan apa-apa jika Boss belum di-set
+        // Integrasi Animasi Attack
+        if (anim != null) anim.SetTrigger("Attack");
+
         if (bossTransform == null)
         {
-            Debug.LogError("Boss Transform belum di-set di Player2Controller! Serangan dibatalkan.");
+            Debug.LogError("Boss Transform belum di-set di Player2Controller!");
             return;
         }
 
-        // Animasi Attack
-        if (anim != null) anim.SetTrigger("Attack");
-
-        // 1. Hitung arah dari titik tembak (firePoint) ke posisi Boss
         Vector2 directionToBoss = (bossTransform.position - firePoint.position).normalized;
-
-        // 2. Hitung sudut dari arah tersebut (dalam derajat)
         float angle = Mathf.Atan2(directionToBoss.y, directionToBoss.x) * Mathf.Rad2Deg;
-
-        // 3. Buat rotasi Quaternion dari sudut yang sudah dihitung
         Quaternion targetRotation = Quaternion.Euler(0f, 0f, angle);
 
-        // 4. Tembakkan proyektil dengan posisi dan ROTASI yang sudah benar
         GameObject projectileGO = Instantiate(projectilePrefab, firePoint.position, targetRotation);
         
-        // 5. Cek apakah script ada sebelum menetapkan owner
         Projectile projectileScript = projectileGO.GetComponent<Projectile>();
         if (projectileScript != null)
         {
-            // Jika ada, beri tahu proyektil siapa pemiliknya untuk statistik
-            projectileScript.owner = this;
-        }
-        else
-        {
-            Debug.LogError("FATAL ERROR: 'projectilePrefab' Anda tidak memiliki script 'Projectile.cs' terpasang!");
+             projectileScript.owner = this;
         }
 
-        // 6. Set cooldown
         nextAttackTime = Time.time + attackCooldown;
     }
 
     public void TakeDamage(int damage)
-    {
+    { 
         if (isDead) return;
-
         health -= damage;
         
-        // Animasi Terluka
+        // Integrasi Animasi Hurt
         if (anim != null) anim.SetTrigger("Hurt");
 
-        if (health <= 0)
-        {
-            Die();
-        }
+        if (health <= 0) Die();
     }
 
     private void Die()
@@ -157,25 +149,18 @@ public class Player2Controller : MonoBehaviour
         isDead = true;
         health = 0;
 
-        // Trigger Animasi Mati
-        if (anim != null) anim.SetBool("IsDead", true); // Atau SetTrigger("Die")
+        // Integrasi Animasi Death
+        if (anim != null) anim.SetBool("IsDead", true); 
 
-        // Matikan fisika agar mayat tidak gerak/jatuh aneh
         rb.velocity = Vector2.zero;
         rb.isKinematic = true; 
         
-        // Matikan collider
         if(col != null) col.enabled = false;
 
         Debug.Log("Player 2 Died.");
     }
 
-    // --- FUNGSI ANIMATION EVENT (WAJIB DI-SETUP DI UNITY) ---
-    public void OnDeathAnimationFinished()
-    {
-        Destroy(gameObject);
-    }
-
+    // --- LOGIKA DETEKSI TANAH ASLI (COLLISION) ---
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Ground")) { isOnGround = true; }
@@ -184,5 +169,10 @@ public class Player2Controller : MonoBehaviour
     private void OnCollisionExit2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Ground")) { isOnGround = false; }
+    }
+    
+    public void OnDeathAnimationFinished()
+    {
+        Destroy(gameObject);
     }
 }

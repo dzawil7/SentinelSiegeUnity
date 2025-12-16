@@ -9,7 +9,7 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Shield
   - Water
   - UI
   - Boss
@@ -39,6 +39,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Layer shield
+    uniqueID: 480589741
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0

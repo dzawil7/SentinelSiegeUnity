@@ -42,7 +42,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -70,7 +70,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 2
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -91,7 +91,784 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_0
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 0
+        width: 35
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4d3e85c9ca21d73418d906aee349d4bb
+      internalID: -1871788405
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_1
+      rect:
+        serializedVersion: 2
+        x: 53
+        y: 0
+        width: 35
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d56463feb0edd4440ad3c19748b04497
+      internalID: -1778730330
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_2
+      rect:
+        serializedVersion: 2
+        x: 103
+        y: 0
+        width: 20
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 018f19b33fa680b4893371a5b7bd0280
+      internalID: -1572551768
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_3
+      rect:
+        serializedVersion: 2
+        x: 151
+        y: 0
+        width: 28
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 22b2c10a45d8cc84fb461befa58ebbe4
+      internalID: 1073636687
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_4
+      rect:
+        serializedVersion: 2
+        x: 199
+        y: 0
+        width: 27
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 395dc38620460a443a60b2752028cb8e
+      internalID: 991865384
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_5
+      rect:
+        serializedVersion: 2
+        x: 247
+        y: 0
+        width: 27
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6b29e798ca0bf68458487b8ac6a9d53a
+      internalID: -1045358897
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_6
+      rect:
+        serializedVersion: 2
+        x: 295
+        y: 0
+        width: 19
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0b9f5aeb30621ec41ba94075ba445aba
+      internalID: 1148210053
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_7
+      rect:
+        serializedVersion: 2
+        x: 342
+        y: 0
+        width: 21
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3006a6c594aca6149a6bc6964d4d18a5
+      internalID: 766095847
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_8
+      rect:
+        serializedVersion: 2
+        x: 390
+        y: 0
+        width: 22
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4be6dfa36d320794bb1ac0768bf91e70
+      internalID: 1159499269
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_9
+      rect:
+        serializedVersion: 2
+        x: 439
+        y: 0
+        width: 22
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6450518e1aaa4eb47ba9d58c047f41a8
+      internalID: -965275644
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_10
+      rect:
+        serializedVersion: 2
+        x: 487
+        y: 0
+        width: 30
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f97459de73fe4d94fae3db73a44c228a
+      internalID: 780686197
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_11
+      rect:
+        serializedVersion: 2
+        x: 535
+        y: 0
+        width: 30
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c21433e599c9cd84a8fe1c34eb3da304
+      internalID: 1683624785
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_12
+      rect:
+        serializedVersion: 2
+        x: 583
+        y: 0
+        width: 29
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bfd707de922c46649a83fe467bb9adeb
+      internalID: -859553156
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_13
+      rect:
+        serializedVersion: 2
+        x: 631
+        y: 0
+        width: 20
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a2308492a6532a740884fa8e7c48795d
+      internalID: -866608433
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_14
+      rect:
+        serializedVersion: 2
+        x: 678
+        y: 0
+        width: 20
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aa6fc4d8d3555494687568b159e81b88
+      internalID: -1268403452
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_15
+      rect:
+        serializedVersion: 2
+        x: 725
+        y: 0
+        width: 35
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4458336f1bb1ae247ac27fce44a5f8a5
+      internalID: 536448682
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_16
+      rect:
+        serializedVersion: 2
+        x: 773
+        y: 0
+        width: 35
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2cd10a72dd51da84099241f0c5e510b3
+      internalID: -1065126637
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_17
+      rect:
+        serializedVersion: 2
+        x: 821
+        y: 0
+        width: 37
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9fa927a9189a598468bd059b3615b561
+      internalID: 1807560905
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_18
+      rect:
+        serializedVersion: 2
+        x: 871
+        y: 0
+        width: 39
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c006c93a9dc41d64289c7a125d517b38
+      internalID: -1453205774
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_19
+      rect:
+        serializedVersion: 2
+        x: 919
+        y: 0
+        width: 35
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4e926213045ff4940a29e4576de535d9
+      internalID: 1453140674
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_20
+      rect:
+        serializedVersion: 2
+        x: 967
+        y: 0
+        width: 35
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e4451481d39ede24081638449497ef9c
+      internalID: -1773230646
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_21
+      rect:
+        serializedVersion: 2
+        x: 1015
+        y: 0
+        width: 34
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5b75d024ef8075844a3fd575ede8c1cd
+      internalID: -64233307
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_22
+      rect:
+        serializedVersion: 2
+        x: 1063
+        y: 0
+        width: 32
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b61cdf5ee97e3be47840d09ee9e6dd23
+      internalID: -1542784276
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_23
+      rect:
+        serializedVersion: 2
+        x: 1111
+        y: 0
+        width: 19
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4ef6565df25c43542b34e9b311680e15
+      internalID: 736183928
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_24
+      rect:
+        serializedVersion: 2
+        x: 1157
+        y: 0
+        width: 37
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a147f1ab45d2fd74abcd75d4c892264f
+      internalID: -1726319128
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_25
+      rect:
+        serializedVersion: 2
+        x: 1207
+        y: 0
+        width: 21
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 559d0d9e54cb7e941bb4772225866e7c
+      internalID: 472237155
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_26
+      rect:
+        serializedVersion: 2
+        x: 1253
+        y: 0
+        width: 37
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 89b6b2caea059db44a970e5a37bcf844
+      internalID: -789278207
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_27
+      rect:
+        serializedVersion: 2
+        x: 1303
+        y: 0
+        width: 26
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5580a7b6d343da5479d065f836379bbf
+      internalID: 1276476812
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_28
+      rect:
+        serializedVersion: 2
+        x: 1349
+        y: 0
+        width: 35
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5349da4c4df6bbc4384042b870416fdc
+      internalID: -17710275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_29
+      rect:
+        serializedVersion: 2
+        x: 1399
+        y: 0
+        width: 33
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 988e6cc3d198b6145875479b7ff76879
+      internalID: -977952482
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_30
+      rect:
+        serializedVersion: 2
+        x: 1445
+        y: 0
+        width: 34
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 78b7daf5413815c47b9a8f76319a9eca
+      internalID: 1400070583
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_31
+      rect:
+        serializedVersion: 2
+        x: 1495
+        y: 0
+        width: 30
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 122c50cf98feb504c8deffca29d8dd6e
+      internalID: 458674794
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_32
+      rect:
+        serializedVersion: 2
+        x: 1541
+        y: 0
+        width: 36
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a091eb22e24775140b6f0f61662834e6
+      internalID: -2086748934
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_33
+      rect:
+        serializedVersion: 2
+        x: 1591
+        y: 0
+        width: 36
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c62370fef5c40fb4f93abf489b09f14d
+      internalID: 1988598337
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_34
+      rect:
+        serializedVersion: 2
+        x: 1637
+        y: 0
+        width: 43
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d8b1679c7ad55ca41a8fd393cb296569
+      internalID: -1631694313
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_35
+      rect:
+        serializedVersion: 2
+        x: 1687
+        y: 0
+        width: 35
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 83c95e4b0bd98624683c2a8cc5cf7241
+      internalID: 1899755050
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: robot3attack1-Sheet[32height48wide]_36
+      rect:
+        serializedVersion: 2
+        x: 1735
+        y: 0
+        width: 33
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0b2198b37338686498158208382d0de9
+      internalID: 847696233
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -102,7 +879,44 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      robot3attack1-Sheet[32height48wide]_0: -1871788405
+      robot3attack1-Sheet[32height48wide]_1: -1778730330
+      robot3attack1-Sheet[32height48wide]_10: 780686197
+      robot3attack1-Sheet[32height48wide]_11: 1683624785
+      robot3attack1-Sheet[32height48wide]_12: -859553156
+      robot3attack1-Sheet[32height48wide]_13: -866608433
+      robot3attack1-Sheet[32height48wide]_14: -1268403452
+      robot3attack1-Sheet[32height48wide]_15: 536448682
+      robot3attack1-Sheet[32height48wide]_16: -1065126637
+      robot3attack1-Sheet[32height48wide]_17: 1807560905
+      robot3attack1-Sheet[32height48wide]_18: -1453205774
+      robot3attack1-Sheet[32height48wide]_19: 1453140674
+      robot3attack1-Sheet[32height48wide]_2: -1572551768
+      robot3attack1-Sheet[32height48wide]_20: -1773230646
+      robot3attack1-Sheet[32height48wide]_21: -64233307
+      robot3attack1-Sheet[32height48wide]_22: -1542784276
+      robot3attack1-Sheet[32height48wide]_23: 736183928
+      robot3attack1-Sheet[32height48wide]_24: -1726319128
+      robot3attack1-Sheet[32height48wide]_25: 472237155
+      robot3attack1-Sheet[32height48wide]_26: -789278207
+      robot3attack1-Sheet[32height48wide]_27: 1276476812
+      robot3attack1-Sheet[32height48wide]_28: -17710275
+      robot3attack1-Sheet[32height48wide]_29: -977952482
+      robot3attack1-Sheet[32height48wide]_3: 1073636687
+      robot3attack1-Sheet[32height48wide]_30: 1400070583
+      robot3attack1-Sheet[32height48wide]_31: 458674794
+      robot3attack1-Sheet[32height48wide]_32: -2086748934
+      robot3attack1-Sheet[32height48wide]_33: 1988598337
+      robot3attack1-Sheet[32height48wide]_34: -1631694313
+      robot3attack1-Sheet[32height48wide]_35: 1899755050
+      robot3attack1-Sheet[32height48wide]_36: 847696233
+      robot3attack1-Sheet[32height48wide]_4: 991865384
+      robot3attack1-Sheet[32height48wide]_5: -1045358897
+      robot3attack1-Sheet[32height48wide]_6: 1148210053
+      robot3attack1-Sheet[32height48wide]_7: 766095847
+      robot3attack1-Sheet[32height48wide]_8: 1159499269
+      robot3attack1-Sheet[32height48wide]_9: -965275644
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

@@ -118,7 +118,6 @@ public class PlayerController : MonoBehaviour
         {
             GameObject hitboxGO = Instantiate(meleeHitboxPrefab, attackPoint.position, attackPoint.rotation);
             AttackHitbox hitboxScript = hitboxGO.GetComponent<AttackHitbox>();
-            // SAYA PERTAHANKAN: owner = this sesuai kode asli Anda
             if (hitboxScript != null) hitboxScript.owner = this; 
         }
         

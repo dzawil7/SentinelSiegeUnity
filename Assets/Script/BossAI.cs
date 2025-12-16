@@ -16,7 +16,7 @@ public class BossAI : MonoBehaviour
 
     // --- Pengaturan Gerakan ---
     [Header("Pengaturan Gerakan")]
-    [SerializeField] private float moveSpeed = 4f;
+    [SerializeField] private float moveSpeed = 8f;
     
     // --- Referensi Prefab & Transform ---
     [Header("Referensi Aset")]
@@ -24,8 +24,11 @@ public class BossAI : MonoBehaviour
     [SerializeField] private Transform groundSlamPoint;
     [SerializeField] private GameObject laserBeamPrefab;
     [SerializeField] private Transform laserFirePoint;
-    [SerializeField] private GameObject shieldVisualPrefab;
-    [SerializeField] private Transform shieldSpawnPoint;
+    [SerializeField] private GameObject shieldVisualPrefab; // PASTIKAN SUDAH DI-DRAG
+    [SerializeField] private Transform shieldSpawnPoint;   // PASTIKAN SUDAH DI-DRAG
+
+    // --- ANIMATION REFERENCE ---
+    private Animator anim; 
 
     // --- Pengaturan Shield ---
     [Header("Pengaturan Shield")]
@@ -80,6 +83,9 @@ public class BossAI : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         
+        // --- INIT ANIMATOR ---
+        anim = GetComponent<Animator>();
+        
         // MENGAMBIL MODE DARI GAMESETTINGS
         currentMode = GameSettings.SelectedMode;
         currentAIModeName = currentMode.ToString();
@@ -93,7 +99,7 @@ public class BossAI : MonoBehaviour
 
     void Update()
     {
-        if (health <= 0) return; // Jangan update jika mati
+        if (health <= 0) return;
 
         // 1. Timer Berpikir
         thinkTimer -= Time.deltaTime;
@@ -134,6 +140,20 @@ public class BossAI : MonoBehaviour
                 Flip();
             }
         }
+
+        // 5. Update Animasi
+        UpdateAnimations();
+    }
+
+    private void UpdateAnimations()
+    {
+        if (anim == null) return;
+
+        bool isRunning = (currentAction == "CHASE_PLAYER");
+        anim.SetBool("Run", isRunning);
+
+        bool isIdle = (currentAction == "IDLE" || currentAction == "SHIELD");
+        anim.SetBool("Idle", isIdle);
     }
 
     private void Flip()
@@ -144,9 +164,7 @@ public class BossAI : MonoBehaviour
         transform.localScale = theScale;
     }
 
-    // ==================================================================================
-    // MODE 1: FSM CONVENTIONAL
-    // ==================================================================================
+    // --- LOGIKA THINKING (FSM/FuSM) ---
     private void Think_FSM()
     {
         if (!CheckTargets()) return;
@@ -182,9 +200,6 @@ public class BossAI : MonoBehaviour
         thinkTimer = 1.5f; 
     }
 
-    // ==================================================================================
-    // MODE 2: FuSM SET A 
-    // ==================================================================================
     private void Think_FuSM_SetA()
     {
         if (!CheckTargets()) return;
@@ -212,9 +227,6 @@ public class BossAI : MonoBehaviour
         thinkTimer = 1.5f; 
     }
 
-    // ==================================================================================
-    // MODE 3: FuSM SET B (FULL COMPLEX)
-    // ==================================================================================
     private void Think_FuSM_SetB()
     {
         if (!CheckTargets()) return;
@@ -293,6 +305,7 @@ public class BossAI : MonoBehaviour
             }
         }
     }
+    // --- AKHIR LOGIKA THINKING ---
 
     private void ExecuteAction(string action)
     {
@@ -329,6 +342,7 @@ public class BossAI : MonoBehaviour
             case "GROUND_SLAM":
                 rb.velocity = Vector2.zero;
                 if(currentMode == AIMode.FuSM_SetB) currentStamina -= staminaCostSlam;
+                if (anim != null) anim.SetTrigger("AttackSlam");
                 Instantiate(groundSlamPrefab, groundSlamPoint.position, Quaternion.identity)
                     .GetComponent<BossAttackHitbox>().owner = this;
                 break;
@@ -336,6 +350,7 @@ public class BossAI : MonoBehaviour
             case "LASER_BEAM":
                 rb.velocity = Vector2.zero;
                 if(currentMode == AIMode.FuSM_SetB) currentStamina -= staminaCostLaser;
+                if (anim != null) anim.SetTrigger("AttackLaser");
                 if (currentTarget == null) return;
                 Vector2 dirTo = (currentTarget.position - laserFirePoint.position).normalized;
                 float angle = Mathf.Atan2(dirTo.y, dirTo.x) * Mathf.Rad2Deg;
@@ -345,6 +360,7 @@ public class BossAI : MonoBehaviour
 
             case "REPOSITION":
                 if (currentTarget == null) return;
+                if (anim != null) anim.SetTrigger("Jump");
                 float hDir = (currentTarget.position.x > transform.position.x) ? 1f : -1f;
                 if (isRecharging) hDir *= -1f; 
                 rb.velocity = new Vector2(hDir * moveSpeed, repositionJumpForce); 
@@ -353,12 +369,28 @@ public class BossAI : MonoBehaviour
                 break;
 
             case "SHIELD":
+                // --- DEBUGGING SHIELD START ---
+                if (shieldVisualPrefab == null || shieldSpawnPoint == null)
+                {
+                    Debug.LogError("BOSS SHIELD GAGAL: shieldVisualPrefab atau shieldSpawnPoint belum di-assign di Inspector!");
+                    return; // Hentikan eksekusi jika referensi null
+                }
+                Debug.Log("BOSS SHIELD: Mengaktifkan perisai visual.");
+
                 rb.velocity = Vector2.zero;
                 isInvincible = true;
                 shieldCooldownTimer = shieldCooldown; 
+                
+                // Instansiasi sebagai anak dari shieldSpawnPoint
                 var shield = Instantiate(shieldVisualPrefab, shieldSpawnPoint);
-                Invoke(nameof(DisableShield), 4f);
+                
+                // Pastikan shield berada di local position (0,0,0) di bawah SpawnPoint
+                // Ini penting jika SpawnPoint sudah berada di posisi yang benar di Boss
+                shield.transform.localPosition = Vector3.zero; 
+                
+                Invoke(nameof(DisableShield), shieldDuration); // Menggunakan shieldDuration
                 break;
+            // --- DEBUGGING SHIELD END ---
 
             case "IDLE":
                 rb.velocity = new Vector2(0, rb.velocity.y);
@@ -388,28 +420,46 @@ public class BossAI : MonoBehaviour
     }
 
     private bool CheckTargets() { if (player1 == null && player2 == null) { this.enabled = false; rb.velocity = Vector2.zero; return false; } return true; }
-    private void DisableShield() { isInvincible = false; if (shieldSpawnPoint.childCount > 0) Destroy(shieldSpawnPoint.GetChild(0).gameObject); } 
     
-    // ==================================================================================
-    // FIX PENTING: TAKEDAMAGE DENGAN FAILSAFE
-    // ==================================================================================
+    private void DisableShield() 
+    { 
+        isInvincible = false; 
+        // --- DEBUGGING SHIELD CLEANUP ---
+        if (shieldSpawnPoint != null)
+        {
+            if (shieldSpawnPoint.childCount > 0) 
+            {
+                // Menghapus objek anak (shield) yang pertama ditemukan
+                Destroy(shieldSpawnPoint.GetChild(0).gameObject); 
+                Debug.Log("BOSS SHIELD: Visual perisai dihapus.");
+            }
+        }
+        // --- END CLEANUP ---
+    } 
+    
     public void TakeDamage(int damage) 
     { 
         if (isInvincible) return; 
         
         health -= damage; 
         
-        // 1. Kunci HP ke 0 jika negatif (UI fix)
+        if (anim != null) anim.SetTrigger("Hurt");
+
         if (health < 0) health = 0;
 
-        // 2. Jika mati, hancurkan object
         if (health <= 0) 
         {
-            // Opsional: Panggil fungsi efek ledakan di sini
-            Destroy(gameObject); 
+            if (anim != null) anim.SetTrigger("Death");
+
+            this.enabled = false;
+            rb.velocity = Vector2.zero;
+            if(GetComponent<Collider2D>()) GetComponent<Collider2D>().enabled = false;
+
+            Destroy(gameObject, 1.0f); 
         }
     }
     
+    // ... (Fuzzy Logic Helpers and API methods remain unchanged)
     private float Trimf(float x, float a, float b, float c) { if (x < a || x > c) return 0; if (x < b) return (x - a) / (b - a); return (c - x) / (c - b); }
     
     private string ChooseWeightedRandomAction(Dictionary<string, float> options) {
@@ -422,7 +472,7 @@ public class BossAI : MonoBehaviour
     
     private void OnCollisionEnter2D(Collision2D collision) { if (collision.gameObject.CompareTag("Ground")) isOnGround = true; }
     private void OnCollisionExit2D(Collision2D collision) { if (collision.gameObject.CompareTag("Ground")) isOnGround = false; }
-
+    
     // ==================================================================================
     // NEW PUBLIC API FOR UI & DEBUG
     // ==================================================================================
@@ -442,10 +492,11 @@ public class BossAI : MonoBehaviour
 
         string staminaColor = isRecharging ? "red" : "white";
         string stateColor = "yellow";
+        string modeColor = "cyan";
         string hpColor = (health < maxHealth * 0.3f) ? "red" : "green";
 
         return $"<b>[AI ANALYTICS - SENTINEL]</b>\n" +
-               $"Mode: <color=cyan>{modeName}</color>\n" +
+               $"Mode: <color={modeColor}>{modeName}</color>\n" +
                $"Action: <color={stateColor}>{currentAction}</color>\n" +
                $"HP: <color={hpColor}>{health}/{maxHealth}</color>\n" +
                $"Stamina: <color={staminaColor}>{currentStamina:F0}/{maxStamina}</color>\n" +

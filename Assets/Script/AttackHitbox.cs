@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class AttackHitbox : MonoBehaviour
 {
-    public int damage = 15;
+    public int damage = 20;
     // Pastikan variabel 'owner' ini ada dan bertipe 'PlayerController'
     public PlayerController owner; 
 

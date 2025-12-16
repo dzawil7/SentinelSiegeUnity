@@ -17,7 +17,6 @@ public class BossAI : MonoBehaviour
     // --- Pengaturan Gerakan ---
     [Header("Pengaturan Gerakan")]
     [SerializeField] private float moveSpeed = 4f;
-    // [angryMoveSpeedMultiplier] DIHAPUS
     
     // --- Referensi Prefab & Transform ---
     [Header("Referensi Aset")]
@@ -40,7 +39,6 @@ public class BossAI : MonoBehaviour
     [SerializeField] private float staminaCostChase = 10f;
     [SerializeField] private float staminaCostSlam = 30f;
     [SerializeField] private float staminaCostLaser = 40f;
-    // [staminaCostReposition] DIHAPUS
     
     [SerializeField] private float rechargeThreshold = 50f;
 
@@ -95,6 +93,8 @@ public class BossAI : MonoBehaviour
 
     void Update()
     {
+        if (health <= 0) return; // Jangan update jika mati
+
         // 1. Timer Berpikir
         thinkTimer -= Time.deltaTime;
         if (thinkTimer <= 0f)
@@ -145,8 +145,7 @@ public class BossAI : MonoBehaviour
     }
 
     // ==================================================================================
-    // MODE 1: FSM CONVENTIONAL (Sesuai Tabel 3.1)
-    // Logika: Biner, Kaku, Interval Statis 1.5s
+    // MODE 1: FSM CONVENTIONAL
     // ==================================================================================
     private void Think_FSM()
     {
@@ -158,15 +157,14 @@ public class BossAI : MonoBehaviour
         float distance = Mathf.Min(distP1, distP2);
         float hpPercent = health / maxHealth;
 
-        string actionToTake = "CHASE_PLAYER"; // Default
+        string actionToTake = "CHASE_PLAYER"; 
 
-        // Aturan Kaku (Crisp Logic)
         if (hpPercent < 0.2f && !fsmHasShieldedOnce) 
         {
             actionToTake = "SHIELD";
             fsmHasShieldedOnce = true;
         }
-        else if (fsmRepositionTimer >= 10f) // Reposition tiap 10 detik
+        else if (fsmRepositionTimer >= 10f) 
         {
             actionToTake = "REPOSITION";
             fsmRepositionTimer = 0f; 
@@ -180,58 +178,47 @@ public class BossAI : MonoBehaviour
             actionToTake = "LASER_BEAM";
         }
 
-        Debug.Log($"[FSM] Dist:{distance:F1} HP:{hpPercent:P0} -> {actionToTake}");
         ExecuteAction(actionToTake);
-        thinkTimer = 1.5f; // Statis
+        thinkTimer = 1.5f; 
     }
 
     // ==================================================================================
-    // MODE 2: FuSM SET A (Sesuai Tabel 3.2)
-    // Logika: Fuzzy Dasar (Hanya Jarak), Interval Statis 1.5s, Tanpa Stamina/Panic
+    // MODE 2: FuSM SET A 
     // ==================================================================================
     private void Think_FuSM_SetA()
     {
         if (!CheckTargets()) return;
 
-        // Targeting: Selalu yang terdekat
         float distP1 = (player1 != null) ? Vector2.Distance(transform.position, player1.position) : Mathf.Infinity;
         float distP2 = (player2 != null) ? Vector2.Distance(transform.position, player2.position) : Mathf.Infinity;
         currentTarget = (distP1 < distP2) ? player1 : player2;
         float distance = Mathf.Min(distP1, distP2);
 
-        // Fuzzifikasi Jarak
         var jarakFuzzy = new Dictionary<string, float> {
              { "Dekat",  Trimf(distance, -1f, 0f, 5f) },
              { "Sedang", Trimf(distance, 3f, 7f, 12f) },
              { "Jauh",   Trimf(distance, 10f, 15f, 25f) }
         };
 
-        // Evaluasi Aturan (Sederhana)
         var urgencies = new Dictionary<string, float>();
         urgencies["GROUND_SLAM"] = jarakFuzzy["Dekat"] * 0.9f;
         urgencies["CHASE_PLAYER"] = jarakFuzzy["Sedang"] * 0.8f;
         urgencies["LASER_BEAM"] = jarakFuzzy["Jauh"] * 0.9f;
         
-        // Fallback ringan jika semua urgensi 0
         urgencies["CHASE_PLAYER"] += 0.1f; 
 
-        // Defuzzifikasi (Weighted Random)
         string chosenAction = ChooseWeightedRandomAction(urgencies);
-        
-        Debug.Log($"[FuSM A] D:{jarakFuzzy["Dekat"]:F1} S:{jarakFuzzy["Sedang"]:F1} J:{jarakFuzzy["Jauh"]:F1} -> {chosenAction}");
         ExecuteAction(chosenAction);
-        thinkTimer = 1.5f; // Statis
+        thinkTimer = 1.5f; 
     }
 
     // ==================================================================================
-    // MODE 3: FuSM SET B (FULL COMPLEX - Sesuai Tabel 3.3)
-    // Logika: Fuzzy Adaptif + Stamina + Recharge (Tanpa Panic)
+    // MODE 3: FuSM SET B (FULL COMPLEX)
     // ==================================================================================
     private void Think_FuSM_SetB()
     {
         if (!CheckTargets()) return;
 
-        // 1. Targeting Dinamis (RNG 50/50)
         if (player1 != null && player2 != null) 
             currentTarget = (Random.Range(0, 2) == 0) ? player1 : player2;
         else 
@@ -239,10 +226,9 @@ public class BossAI : MonoBehaviour
 
         float distance = Vector2.Distance(transform.position, currentTarget.position);
 
-        // 2. Fuzzifikasi
         var jarakFuzzy = new Dictionary<string, float> {
-             { "Dekat",  Trimf(distance, -1f, 0f, 4f) },
-             { "Sedang", Trimf(distance, 3f, 6f, 9f) },
+             { "Dekat",  Trimf(distance, -1f, 0f, 5f) },
+             { "Sedang", Trimf(distance, 3f, 6.5f, 10f) },
              { "Jauh",   Trimf(distance, 8f, 12f, 15f) }
         };
         float hpPercent = health / maxHealth;
@@ -256,18 +242,14 @@ public class BossAI : MonoBehaviour
             { "Lelah", Trimf(stamPercent, -0.1f, 0.0f, 0.6f) }
         };
 
-        // --- LOGIKA RECHARGE ---
         bool canAttack = currentStamina >= staminaCostSlam || currentStamina >= staminaCostLaser || currentStamina >= (staminaCostChase * 2f);
         if (!canAttack) isRecharging = true; 
         else if (isRecharging && currentStamina >= rechargeThreshold) isRecharging = false; 
 
-        // 3. Evaluasi Aturan
         var urgencies = new Dictionary<string, float>();
 
         if (isRecharging) 
         {
-            Debug.LogWarning($"BOSS RECHARGING! Stamina: {currentStamina:F0} (Lelah: {stamFuzzy["Lelah"]:F2})");
-            
             urgencies["REPOSITION"] = 0.5f;
             urgencies["SHIELD"] = 0.4f;
             urgencies["IDLE"] = 0.1f;
@@ -275,44 +257,32 @@ public class BossAI : MonoBehaviour
             if (repositionCooldownTimer > 0 || !isOnGround) urgencies["REPOSITION"] = 0;
             if (shieldCooldownTimer > 0 || isInvincible) urgencies["SHIELD"] = 0;
         }
-        else // FSM Normal
+        else 
         {
             urgencies["GROUND_SLAM"] = jarakFuzzy["Dekat"] * 0.9f * stamFuzzy["Penuh"];
             urgencies["LASER_BEAM"] = jarakFuzzy["Jauh"] * 0.85f * stamFuzzy["Penuh"];
-            
-            // Logika Chase (Hanya jika Stamina Penuh dan Jarak Sedang)
             urgencies["CHASE_PLAYER"] = jarakFuzzy["Sedang"] * 0.7f * stamFuzzy["Penuh"]; 
-
-            // Urgensi Reposition (Makin Kritis HP, makin sering lompat)
             urgencies["REPOSITION"] = (0.15f + (jarakFuzzy["Dekat"] * hpFuzzy["Kritis"] * 0.5f));
             
-            // Urgensi Shield (Hanya HP Kritis)
             float shieldUrg = (hpFuzzy["Kritis"] * 1.0f);
-            
             if (shieldCooldownTimer > 0 || isInvincible) shieldUrg = 0;
             urgencies["SHIELD"] = shieldUrg;
 
             if (repositionCooldownTimer > 0 || !isOnGround) urgencies["REPOSITION"] = 0;
         }
 
-        // 4. Defuzzifikasi
-        // Gunakan aiUrgencyThreshold variabel
         var qualified = urgencies.Where(x => x.Value > aiUrgencyThreshold).ToDictionary(x => x.Key, x => x.Value); 
         string chosen = ChooseWeightedRandomAction(qualified);
         
-        // <<< INTERCEPT: Jika bingung (FORCE_RECHARGE), paksa masuk Recharge >>>
         if (chosen == "FORCE_RECHARGE")
         {
-            Debug.LogWarning("AI Bingung (Semua urgensi rendah) -> Memaksa Fase Recharge");
             isRecharging = true;
-            ExecuteAction("IDLE"); // Diam dulu di frame ini
-            thinkTimer = 0.5f;     // Cek lagi sebentar lagi
+            ExecuteAction("IDLE"); 
+            thinkTimer = 0.5f;     
         }
         else
         {
             ExecuteAction(chosen);
-
-            // 5. Interval Dinamis
             if (isRecharging) 
             {
                 thinkTimer = 0.5f; 
@@ -322,9 +292,6 @@ public class BossAI : MonoBehaviour
                 thinkTimer = Mathf.Lerp(maxThinkInterval, minThinkInterval, hpFuzzy["Kritis"]);
             }
         }
-        
-        string targetName = currentTarget != null ? currentTarget.name : "None";
-        Debug.Log($"[FuSM B] Aksi: {chosen} | Target: {targetName} | Stamina: {currentStamina:F0} | Recharging: {isRecharging} | Next Think: {thinkTimer:F2}s");
     }
 
     private void ExecuteAction(string action)
@@ -342,8 +309,6 @@ public class BossAI : MonoBehaviour
             {
                 if (action == "GROUND_SLAM" && currentStamina < staminaCostSlam) canExecute = false;
                 if (action == "LASER_BEAM" && currentStamina < staminaCostLaser) canExecute = false;
-                // Reposition sekarang GRATIS, tidak cek stamina
-                // Chase selalu boleh di eksekusi awal, stamina dicek di Update
             }
         }
 
@@ -357,7 +322,6 @@ public class BossAI : MonoBehaviour
             case "CHASE_PLAYER":
                 if (currentTarget == null) break;
                 float spd = moveSpeed;
-                // Hapus angry multiplier, gunakan speed konstan
                 float dir = (currentTarget.position.x > transform.position.x) ? 1f : -1f;
                 rb.velocity = new Vector2(dir * spd, rb.velocity.y);
                 break;
@@ -380,13 +344,9 @@ public class BossAI : MonoBehaviour
                 break;
 
             case "REPOSITION":
-                // Reposition GRATIS (tidak mengurangi stamina)
-                
                 if (currentTarget == null) return;
                 float hDir = (currentTarget.position.x > transform.position.x) ? 1f : -1f;
-                
                 if (isRecharging) hDir *= -1f; 
-
                 rb.velocity = new Vector2(hDir * moveSpeed, repositionJumpForce); 
                 repositionCooldownTimer = repositionCooldown; 
                 isOnGround = false;
@@ -429,21 +389,68 @@ public class BossAI : MonoBehaviour
 
     private bool CheckTargets() { if (player1 == null && player2 == null) { this.enabled = false; rb.velocity = Vector2.zero; return false; } return true; }
     private void DisableShield() { isInvincible = false; if (shieldSpawnPoint.childCount > 0) Destroy(shieldSpawnPoint.GetChild(0).gameObject); } 
-    public void TakeDamage(int damage) { if (isInvincible) return; health -= damage; if (health <= 0) Destroy(gameObject); }
+    
+    // ==================================================================================
+    // FIX PENTING: TAKEDAMAGE DENGAN FAILSAFE
+    // ==================================================================================
+    public void TakeDamage(int damage) 
+    { 
+        if (isInvincible) return; 
+        
+        health -= damage; 
+        
+        // 1. Kunci HP ke 0 jika negatif (UI fix)
+        if (health < 0) health = 0;
+
+        // 2. Jika mati, hancurkan object
+        if (health <= 0) 
+        {
+            // Opsional: Panggil fungsi efek ledakan di sini
+            Destroy(gameObject); 
+        }
+    }
+    
     private float Trimf(float x, float a, float b, float c) { if (x < a || x > c) return 0; if (x < b) return (x - a) / (b - a); return (c - x) / (c - b); }
     
-    // <<< PERBAIKAN LOGIKA CHOOSE WEIGHTED RANDOM >>>
     private string ChooseWeightedRandomAction(Dictionary<string, float> options) {
-        // Jika tidak ada aksi yang lolos threshold (Boss Bingung)
         if (options.Count == 0) return "FORCE_RECHARGE"; 
-        
         float total = options.Values.Sum(); 
         float rnd = Random.Range(0, total);
         foreach (var opt in options) { if (rnd < opt.Value) return opt.Key; rnd -= opt.Value; }
-        
         return options.Keys.First();
     }
     
     private void OnCollisionEnter2D(Collision2D collision) { if (collision.gameObject.CompareTag("Ground")) isOnGround = true; }
     private void OnCollisionExit2D(Collision2D collision) { if (collision.gameObject.CompareTag("Ground")) isOnGround = false; }
+
+    // ==================================================================================
+    // NEW PUBLIC API FOR UI & DEBUG
+    // ==================================================================================
+    public float GetStaminaPercent() => currentStamina / maxStamina;
+    public bool IsBossRecharging() => isRecharging;
+    public string GetCurrentModeName() => currentMode.ToString();
+    public string GetCurrentState() => currentAction;
+    public float GetDistanceToTarget() => (currentTarget != null) ? Vector2.Distance(transform.position, currentTarget.position) : 0f;
+    public float GetThinkTimer() => thinkTimer;
+    public float GetHighestFuzzyScore() => 0f; // Placeholder
+
+    public string GetDebugInfo()
+    {
+        string modeName = currentMode.ToString();
+        string targetName = (currentTarget != null) ? currentTarget.name : "None";
+        float dist = GetDistanceToTarget();
+
+        string staminaColor = isRecharging ? "red" : "white";
+        string stateColor = "yellow";
+        string hpColor = (health < maxHealth * 0.3f) ? "red" : "green";
+
+        return $"<b>[AI ANALYTICS - SENTINEL]</b>\n" +
+               $"Mode: <color=cyan>{modeName}</color>\n" +
+               $"Action: <color={stateColor}>{currentAction}</color>\n" +
+               $"HP: <color={hpColor}>{health}/{maxHealth}</color>\n" +
+               $"Stamina: <color={staminaColor}>{currentStamina:F0}/{maxStamina}</color>\n" +
+               $"Recharging: <b>{isRecharging}</b>\n" +
+               $"Target: {targetName} (Dist: {dist:F1}m)\n" +
+               $"Think Timer: {thinkTimer:F2}s";
+    }
 }

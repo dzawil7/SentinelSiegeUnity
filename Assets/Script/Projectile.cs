@@ -3,7 +3,7 @@ using UnityEngine;
 public class Projectile : MonoBehaviour
 {
     public float speed = 20f;
-    public int damage = 10;
+    public int damage = 15;
     public float lifetime = 2f;
     // <<< TAMBAHAN: Variabel untuk menyimpan siapa "pemilik" proyektil ini.
     public Player2Controller owner; 

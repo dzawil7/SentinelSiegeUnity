@@ -2,10 +2,15 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("Identitas Player")]
+    [Tooltip("Isi 1 untuk Player 1 (WASD), Isi 2 untuk Player 2 (Panah)")]
+    public int playerID = 1;
+
     [Header("Status Player")]
     public int health = 100;
     public int maxHealth = 100;
     public int totalDamageDealt = 0;
+    public bool isDead = false;
 
     [Header("Pengaturan Gerakan")]
     [SerializeField] private float moveSpeed = 8f;
@@ -17,100 +22,138 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float attackCooldown = 0.5f;
     private float nextAttackTime = 0f;
 
+    [Header("Ground Check")]
+    public Transform groundCheck;
+    public float groundCheckRadius = 0.2f;
+    public LayerMask groundLayer;
+
+    // Komponen
     private Rigidbody2D rb;
+    private Animator anim;
+
+    // Variabel Internal
     private bool isOnGround = true;
-    private bool isFacingRight = true; // <<< TAMBAHAN: Untuk mengingat arah hadap
+    private bool isFacingRight = true;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        anim = GetComponent<Animator>();
+        health = maxHealth;
     }
 
     void Update()
     {
-        // --- Input Gerakan (A, D) ---
-        float moveInput = Input.GetAxisRaw("Horizontal");
+        if (isDead) return;
+
+        // --- 1. Cek Tanah (Ground Check) ---
+        if (groundCheck != null)
+        {
+            // Update status tanah
+            isOnGround = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+        }
+
+        // Kirim info tanah ke Animator (PENTING untuk transisi Mendarat/Landing)
+        if (anim != null) anim.SetBool("IsGrounded", isOnGround);
+
+        // --- 2. Input Gerakan ---
+        float moveInput = 0f;
+        if (playerID == 1)
+        {
+            if (Input.GetKey(KeyCode.D)) moveInput = 1;
+            else if (Input.GetKey(KeyCode.A)) moveInput = -1;
+        }
+        else
+        {
+            if (Input.GetKey(KeyCode.RightArrow)) moveInput = 1;
+            else if (Input.GetKey(KeyCode.LeftArrow)) moveInput = -1;
+        }
+
         rb.velocity = new Vector2(moveInput * moveSpeed, rb.velocity.y);
 
-        // --- Logika Membalikkan Arah Karakter ---
-        // <<< TAMBAHAN: Panggil fungsi Flip() jika perlu
-        if (moveInput > 0 && !isFacingRight)
-        {
-            Flip();
-        }
-        else if (moveInput < 0 && isFacingRight)
-        {
-            Flip();
-        }
+        if (anim != null) anim.SetFloat("Speed", Mathf.Abs(moveInput));
 
-        // --- Input Lompat (W) ---
-        if (Input.GetKeyDown(KeyCode.W) && isOnGround)
+        // --- 3. Logika Flip ---
+        if (moveInput > 0 && !isFacingRight) Flip();
+        else if (moveInput < 0 && isFacingRight) Flip();
+
+        // --- 4. Input Lompat (FIX ANIMASI STUCK) ---
+        KeyCode jumpKey = (playerID == 1) ? KeyCode.W : KeyCode.UpArrow;
+
+        if (Input.GetKeyDown(jumpKey) && isOnGround)
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            
+            // FIX: Gunakan Trigger untuk memulai lompat (sekali panggil)
+            // Daripada mengandalkan bool IsGrounded yang bisa bikin looping
+            if (anim != null) anim.SetTrigger("Jump"); 
+            
+            isOnGround = false; // Paksa false agar tidak double jump di frame yang sama
         }
 
-        // --- Input Serangan (S) ---
-        if (Time.time >= nextAttackTime)
+        // --- 5. Input Serangan ---
+        bool attackInput = (playerID == 1) 
+            ? (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.F))
+            : (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.RightControl));
+
+        if (attackInput && Time.time >= nextAttackTime)
         {
-            if (Input.GetKeyDown(KeyCode.S))
-            {
-                Attack();
-            }
+            Attack();
         }
     }
-    
-    // <<< TAMBAHAN: Fungsi baru untuk membalikkan karakter
+
     private void Flip()
     {
-        // Ubah status arah hadap
         isFacingRight = !isFacingRight;
-        
-        // Dapatkan skala saat ini
         Vector3 theScale = transform.localScale;
-        // Balikkan nilai sumbu x
         theScale.x *= -1;
-        // Terapkan skala yang sudah dibalik
         transform.localScale = theScale;
     }
 
     private void Attack()
     {
-       // 1. Buat kloningan dari prefab
-    GameObject hitboxGO = Instantiate(meleeHitboxPrefab, attackPoint.position, attackPoint.rotation);
-    
-    // 2. Ambil script dari kloningan tersebut
-    AttackHitbox hitboxScript = hitboxGO.GetComponent<AttackHitbox>();
+        if (anim != null) anim.SetTrigger("Attack");
 
-    // 3. Set 'owner' dari script kloningan tersebut
-    if (hitboxScript != null)
-    {
-        hitboxScript.owner = this;
-    }
-    else
-    {
-        Debug.LogError("FATAL ERROR: Prefab 'MeleeHitbox' Anda tidak memiliki script 'AttackHitbox.cs'!");
-    }
-    
-    nextAttackTime = Time.time + attackCooldown;
+        if (meleeHitboxPrefab != null && attackPoint != null)
+        {
+            GameObject hitboxGO = Instantiate(meleeHitboxPrefab, attackPoint.position, attackPoint.rotation);
+            AttackHitbox hitboxScript = hitboxGO.GetComponent<AttackHitbox>();
+            if (hitboxScript != null) hitboxScript.owner = this;
+        }
+        
+        nextAttackTime = Time.time + attackCooldown;
     }
 
     public void TakeDamage(int damage)
     {
+        if (isDead) return;
         health -= damage;
-        if (health <= 0)
+        if (anim != null) anim.SetTrigger("Hurt");
+
+        if (health <= 0) Die();
+    }
+
+    private void Die()
+    {
+        isDead = true;
+        health = 0;
+        if (anim != null) anim.SetBool("IsDead", true);
+        rb.velocity = Vector2.zero;
+        rb.isKinematic = true;
+        Debug.Log("Player " + playerID + " Died.");
+    }
+
+    public void AddDamageScore(int damage)
+    {
+        totalDamageDealt += damage;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (groundCheck != null)
         {
-            Destroy(gameObject);
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
         }
     }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Ground")) { isOnGround = true; }
-    }
-
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Ground")) { isOnGround = false; }
-    }
 }
-

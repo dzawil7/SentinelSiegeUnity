@@ -210,8 +210,8 @@ public class BossAI : MonoBehaviour
         float distance = Mathf.Min(distP1, distP2);
 
         var jarakFuzzy = new Dictionary<string, float> {
-             { "Dekat",  Trimf(distance, -1f, 0f, 3f) },
-             { "Sedang", Trimf(distance, 1f, 5f, 10f) },
+             { "Dekat",  Trimf(distance, -1f, 0f, 4f) },
+             { "Sedang", Trimf(distance, 3f, 6f, 10f) },
              { "Jauh",   Trimf(distance, 8f, 15f, 20f) }
         };
 
